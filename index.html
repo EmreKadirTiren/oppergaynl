@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1.0">
+  <title>Your Name - Introduction</title>
+  <style>
+    body {
+      font-family: system-ui, sans-serif;
+      margin: 0;
+      padding: 0;
+      background: #fafafa;
+      color: #222;
+      display: flex; flex-direction: column; align-items: center; min-height: 100vh;
+    }
+    .card {
+      margin-top: 12vh;
+      background: #fff;
+      border-radius: 16px;
+      box-shadow: 0 4px 16px #0001;
+      padding: 2rem 2.5rem;
+      max-width: 360px;
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      gap: 1.2rem;
+    }
+    .avatar {
+      width: 96px;
+      height: 96px;
+      border-radius: 50%;
+      object-fit: cover;
+      margin: 0 auto;
+      border: 2px solid #ececec;
+    }
+    .name { font-size: 2rem; font-weight: 700; }
+    .desc { font-size: 1.15rem; color: #444; }
+    .links {
+      display: flex; gap: 1.5rem; justify-content: center; margin-top: 1rem;
+    }
+    .links a {
+      color: #0074D9; text-decoration: none; font-weight: 500;
+      transition: color 0.2s;
+    }
+    .links a:hover { color: #005fa3; text-decoration: underline; }
+    @media (max-width: 480px) {
+      .card { padding: 1.3rem 0.9rem; }
+      .name { font-size: 1.45rem; }
+    }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <img class="avatar" src="your-photo.jpg" alt="Your Name" />
+    <div class="name">Dragonhj</div>
+    <div class="desc">Hi! I'm a smalltime developer who's starting out. I love coding small projects.</div>
+    <div class="links">
+      <a href="https://x.com/dragnhj" target="_blank">Twitter</a>
+      <a href="mailto:dragon.hasjam@gmail.com">Email</a>
+      <a href="https://github.com/dragonhsj" target="_blank">GitHub</a>
+    </div>
+  </div>
+</body>
+</html>
