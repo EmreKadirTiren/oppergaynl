@@ -1348,36 +1348,9 @@
         </div>
       </div>
 
-      <h3 style="font-family: var(--display); font-weight: 500; color: var(--magenta); margin: 24px 0 10px; font-size: 0.95rem; text-transform: uppercase; letter-spacing: 0.15em;">// FAVORITES</h3>
-      <div class="favorites">
-        <div class="fav">
-          <div class="cover"><img src="album1.jpg" alt="" onerror="this.style.display='none'; this.parentElement.textContent='[ART]';"></div>
-          <div class="info">
-            <strong>[ album ]</strong>
-            <span class="artist">[ artist ]</span>
-          </div>
-        </div>
-        <div class="fav">
-          <div class="cover"><img src="album2.jpg" alt="" onerror="this.style.display='none'; this.parentElement.textContent='[ART]';"></div>
-          <div class="info">
-            <strong>[ album ]</strong>
-            <span class="artist">[ artist ]</span>
-          </div>
-        </div>
-        <div class="fav">
-          <div class="cover"><img src="album3.jpg" alt="" onerror="this.style.display='none'; this.parentElement.textContent='[ART]';"></div>
-          <div class="info">
-            <strong>[ album ]</strong>
-            <span class="artist">[ artist ]</span>
-          </div>
-        </div>
-        <div class="fav">
-          <div class="cover"><img src="album4.jpg" alt="" onerror="this.style.display='none'; this.parentElement.textContent='[ART]';"></div>
-          <div class="info">
-            <strong>[ album ]</strong>
-            <span class="artist">[ artist ]</span>
-          </div>
-        </div>
+      <h3 style="font-family: var(--display); font-weight: 500; color: var(--magenta); margin: 24px 0 10px; font-size: 0.95rem; text-transform: uppercase; letter-spacing: 0.15em;">// RECENT_TRACKS</h3>
+      <div class="favorites" id="recent-tracks">
+        <div class="fav placeholder">[ loading... ]</div>
       </div>
     </section>
 
@@ -1734,38 +1707,81 @@ const LASTFM_KEY  = '4ac572d81e4c078e9b2e1c394496b414';
 const npLabel = document.getElementById('np-label');
 const npTrack = document.getElementById('np-track');
 const npIndicator = document.getElementById('np-indicator');
+const recentTracksEl = document.getElementById('recent-tracks');
 
-async function fetchNowPlaying() {
+function escapeHtml(str) {
+  return String(str).replace(/[&<>"']/g, ch => ({
+    '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+  }[ch]));
+}
+
+function renderRecent(tracks) {
+  if (!tracks.length) {
+    recentTracksEl.innerHTML = '<div class="fav placeholder">[ no recent tracks ]</div>';
+    return;
+  }
+  recentTracksEl.innerHTML = tracks.map(t => {
+    const name = escapeHtml(t.name || '?');
+    const artist = escapeHtml(t.artist?.['#text'] || t.artist?.name || '?');
+    const img = t.image?.find(i => i.size === 'medium')?.['#text']
+             || t.image?.[2]?.['#text']
+             || '';
+    const href = t.url || '#';
+    const cover = img
+      ? `<img src="${escapeHtml(img)}" alt="" onerror="this.style.display='none'; this.parentElement.textContent='[ART]';">`
+      : '[ART]';
+    return `
+      <a class="fav proj-link" href="${escapeHtml(href)}" target="_blank" rel="noopener" style="text-decoration: none; color: inherit;">
+        <div class="cover">${cover}</div>
+        <div class="info">
+          <strong>${name}</strong>
+          <span class="artist">${artist}</span>
+        </div>
+      </a>`;
+  }).join('');
+  bindCursorHovers();
+  bindSounds();
+}
+
+async function fetchLastFm() {
   try {
-    const url = `https://ws.audioscrobbler.com/2.0/?method=user.getrecenttracks&user=${LASTFM_USER}&api_key=${LASTFM_KEY}&format=json&limit=1`;
+    const url = `https://ws.audioscrobbler.com/2.0/?method=user.getrecenttracks&user=${LASTFM_USER}&api_key=${LASTFM_KEY}&format=json&limit=5`;
     const res = await fetch(url);
     if (!res.ok) throw new Error('lastfm api ' + res.status);
     const data = await res.json();
-    const track = data?.recenttracks?.track?.[0];
-    if (!track) {
+    const tracks = data?.recenttracks?.track || [];
+    const current = tracks[0];
+
+    if (!current) {
       npLabel.textContent = 'NO_DATA';
       npTrack.textContent = '[ silent · no signal ]';
       npTrack.classList.add('placeholder');
       npIndicator.style.opacity = '0.25';
+      renderRecent([]);
       return;
     }
-    const nowPlaying = track['@attr']?.nowplaying === 'true';
-    const name = track.name || '?';
-    const artist = track.artist?.['#text'] || track.artist?.name || '?';
+
+    const nowPlaying = current['@attr']?.nowplaying === 'true';
+    const name = current.name || '?';
+    const artist = current.artist?.['#text'] || current.artist?.name || '?';
     npLabel.textContent = nowPlaying ? 'NOW_PLAYING' : 'LAST_PLAYED';
     npTrack.textContent = `${name} · ${artist}`;
     npTrack.classList.remove('placeholder');
     npIndicator.style.opacity = nowPlaying ? '1' : '0.35';
+
+    const recent = nowPlaying ? tracks.slice(1, 5) : tracks.slice(0, 4);
+    renderRecent(recent);
   } catch (e) {
     npLabel.textContent = 'OFFLINE';
     npTrack.textContent = '[ no signal ]';
     npTrack.classList.add('placeholder');
     npIndicator.style.opacity = '0.25';
+    recentTracksEl.innerHTML = '<div class="fav placeholder">[ offline ]</div>';
   }
 }
 
-fetchNowPlaying();
-setInterval(fetchNowPlaying, 30_000);
+fetchLastFm();
+setInterval(fetchLastFm, 30_000);
 
 /* ===== HIT COUNTER (using counterapi.dev — free, no signup) ===== */
 const hitCountEl = document.getElementById('hit-count');
