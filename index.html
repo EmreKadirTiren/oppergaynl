@@ -1,64 +1,723 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1.0">
-  <title>Your Name - Introduction</title>
-  <style>
-    body {
-      font-family: system-ui, sans-serif;
-      margin: 0;
-      padding: 0;
-      background: #fafafa;
-      color: #222;
-      display: flex; flex-direction: column; align-items: center; min-height: 100vh;
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>oppergay.nl — Dragonhj's corner</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=VT323&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  /* ---------- Tokens ---------- */
+  :root {
+    --bg-deep:    #0b0a1f;
+    --bg-mid:     #14123a;
+    --bg-soft:    #1d1b4d;
+    --ink:        #e8e4ff;
+    --ink-dim:    #aea8d6;
+    --ink-faint:  #6b6695;
+    --moon:       #f5e9b8;
+    --star:       #ffd9f2;
+    --accent:     #b095ff;
+    --accent-2:   #7fd9ff;
+    --border:     rgba(176, 149, 255, 0.25);
+    --border-2:   rgba(127, 217, 255, 0.18);
+
+    --serif:      'Cormorant Garamond', 'Times New Roman', serif;
+    --pixel:      'VT323', 'Courier New', monospace;
+    --mono:       'Fira Code', 'Courier New', monospace;
+  }
+
+  * { box-sizing: border-box; }
+
+  html, body {
+    margin: 0;
+    padding: 0;
+    background: var(--bg-deep);
+    color: var(--ink);
+    font-family: var(--serif);
+    font-size: 18px;
+    line-height: 1.55;
+    overflow-x: hidden;
+  }
+
+  /* Starfield background */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background:
+      radial-gradient(2px 2px at 20% 30%, var(--star), transparent 50%),
+      radial-gradient(1px 1px at 70% 80%, var(--ink-dim), transparent 50%),
+      radial-gradient(2px 2px at 40% 70%, var(--moon), transparent 50%),
+      radial-gradient(1px 1px at 85% 20%, var(--star), transparent 50%),
+      radial-gradient(1px 1px at 15% 90%, var(--ink-dim), transparent 50%),
+      radial-gradient(2px 2px at 55% 15%, var(--star), transparent 50%),
+      radial-gradient(1px 1px at 90% 60%, var(--accent-2), transparent 50%),
+      radial-gradient(1px 1px at 30% 50%, var(--star), transparent 50%),
+      radial-gradient(ellipse at top, var(--bg-mid) 0%, var(--bg-deep) 60%);
+    background-size: 800px 800px, 800px 800px, 800px 800px, 800px 800px, 800px 800px, 800px 800px, 800px 800px, 800px 800px, 100% 100%;
+    z-index: -2;
+    animation: drift 120s linear infinite;
+  }
+
+  body::after {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background:
+      radial-gradient(circle at 90% 10%, rgba(245, 233, 184, 0.08) 0%, transparent 30%),
+      radial-gradient(circle at 10% 90%, rgba(176, 149, 255, 0.06) 0%, transparent 40%);
+    z-index: -1;
+    pointer-events: none;
+  }
+
+  @keyframes drift {
+    from { background-position: 0 0, 0 0, 0 0, 0 0, 0 0, 0 0, 0 0, 0 0, 0 0; }
+    to   { background-position: 800px 400px, -800px 400px, 400px -800px, -400px 800px, 800px -400px, 0 800px, -800px 0, 400px 400px, 0 0; }
+  }
+
+  /* ---------- Layout ---------- */
+  .wrap {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 60px 32px 100px;
+    display: grid;
+    grid-template-columns: 1fr 220px;
+    gap: 48px;
+  }
+
+  main { min-width: 0; }
+
+  /* ---------- Header / Hero ---------- */
+  .hero {
+    text-align: center;
+    padding: 40px 20px 60px;
+    border-bottom: 1px dashed var(--border);
+    margin-bottom: 48px;
+    position: relative;
+  }
+
+  .hero .moon {
+    font-size: 80px;
+    line-height: 1;
+    display: inline-block;
+    filter: drop-shadow(0 0 24px rgba(245, 233, 184, 0.5));
+    animation: float 6s ease-in-out infinite;
+  }
+
+  @keyframes float {
+    0%, 100% { transform: translateY(0) rotate(-2deg); }
+    50%      { transform: translateY(-8px) rotate(2deg); }
+  }
+
+  .hero h1 {
+    font-family: var(--serif);
+    font-weight: 500;
+    font-style: italic;
+    font-size: clamp(2.5rem, 6vw, 4rem);
+    margin: 16px 0 8px;
+    letter-spacing: 0.02em;
+    background: linear-gradient(180deg, var(--moon) 0%, var(--accent) 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+  .hero .tagline {
+    color: var(--ink-dim);
+    font-style: italic;
+    font-size: 1.1rem;
+    margin: 0;
+  }
+
+  .hero .url {
+    font-family: var(--pixel);
+    font-size: 1.4rem;
+    color: var(--accent-2);
+    letter-spacing: 0.1em;
+    margin-top: 12px;
+  }
+
+  /* ---------- Sections ---------- */
+  section {
+    margin-bottom: 64px;
+    position: relative;
+  }
+
+  .section-head {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 20px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .section-head .sigil {
+    font-size: 1.4rem;
+    color: var(--moon);
+  }
+
+  h2 {
+    font-family: var(--serif);
+    font-weight: 500;
+    font-size: 2rem;
+    margin: 0;
+    letter-spacing: 0.02em;
+    color: var(--ink);
+  }
+
+  h2 em {
+    color: var(--accent);
+    font-style: italic;
+  }
+
+  /* ---------- Welcome ---------- */
+  .welcome {
+    display: grid;
+    grid-template-columns: 140px 1fr;
+    gap: 28px;
+    align-items: start;
+  }
+
+  .welcome .portrait {
+    width: 140px;
+    height: 140px;
+    border-radius: 8px;
+    background: linear-gradient(135deg, var(--bg-soft), var(--bg-mid));
+    border: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--ink-faint);
+    font-family: var(--pixel);
+    font-size: 0.9rem;
+    overflow: hidden;
+  }
+
+  .welcome .portrait img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+
+  .welcome p {
+    margin: 0 0 12px;
+    font-size: 1.1rem;
+  }
+
+  /* ---------- Quick facts ---------- */
+  .facts {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: grid;
+    gap: 10px;
+  }
+
+  .facts li {
+    padding: 10px 16px;
+    border-left: 2px solid var(--accent);
+    background: rgba(176, 149, 255, 0.04);
+    font-size: 1rem;
+  }
+
+  .facts li::before {
+    content: '☾ ';
+    color: var(--moon);
+  }
+
+  .placeholder {
+    color: var(--ink-faint);
+    font-style: italic;
+  }
+
+  /* ---------- Projects ---------- */
+  .projects {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: 16px;
+  }
+
+  .project {
+    padding: 20px;
+    border: 1px solid var(--border);
+    background: linear-gradient(180deg, rgba(176, 149, 255, 0.04), transparent);
+    border-radius: 4px;
+    transition: all 0.3s ease;
+    position: relative;
+  }
+
+  .project:hover {
+    border-color: var(--accent);
+    transform: translateY(-2px);
+    background: linear-gradient(180deg, rgba(176, 149, 255, 0.08), transparent);
+  }
+
+  .project h3 {
+    font-family: var(--serif);
+    font-weight: 500;
+    font-size: 1.3rem;
+    margin: 0 0 8px;
+    color: var(--accent-2);
+  }
+
+  .project h3::before {
+    content: '✩ ';
+    color: var(--moon);
+  }
+
+  .project p {
+    margin: 0;
+    font-size: 0.95rem;
+    color: var(--ink-dim);
+  }
+
+  /* ---------- Photo wheel ---------- */
+  .wheel-stage {
+    position: relative;
+    height: 320px;
+    perspective: 1200px;
+    margin: 30px auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .wheel {
+    position: relative;
+    width: 200px;
+    height: 200px;
+    transform-style: preserve-3d;
+    animation: spin 30s linear infinite;
+  }
+
+  .wheel:hover { animation-play-state: paused; }
+
+  .wheel .slot {
+    position: absolute;
+    inset: 0;
+    width: 200px;
+    height: 200px;
+    border: 1px solid var(--border);
+    background: linear-gradient(135deg, var(--bg-soft), var(--bg-mid));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--ink-faint);
+    font-family: var(--pixel);
+    font-size: 1rem;
+    border-radius: 6px;
+    box-shadow: 0 0 30px rgba(176, 149, 255, 0.15);
+    overflow: hidden;
+  }
+
+  .wheel .slot img {
+    width: 100%; height: 100%; object-fit: cover; display: block;
+  }
+
+  /* 6-sided carousel */
+  .wheel .slot:nth-child(1) { transform: rotateY(0deg)   translateZ(220px); }
+  .wheel .slot:nth-child(2) { transform: rotateY(60deg)  translateZ(220px); }
+  .wheel .slot:nth-child(3) { transform: rotateY(120deg) translateZ(220px); }
+  .wheel .slot:nth-child(4) { transform: rotateY(180deg) translateZ(220px); }
+  .wheel .slot:nth-child(5) { transform: rotateY(240deg) translateZ(220px); }
+  .wheel .slot:nth-child(6) { transform: rotateY(300deg) translateZ(220px); }
+
+  @keyframes spin {
+    from { transform: rotateY(0deg); }
+    to   { transform: rotateY(360deg); }
+  }
+
+  .wheel-hint {
+    text-align: center;
+    color: var(--ink-faint);
+    font-family: var(--pixel);
+    font-size: 1rem;
+    margin-top: -10px;
+  }
+
+  /* ---------- Now playing / favorites ---------- */
+  .now-playing {
+    border: 1px solid var(--border-2);
+    border-radius: 4px;
+    padding: 20px 24px;
+    background: linear-gradient(135deg, rgba(127, 217, 255, 0.05), rgba(176, 149, 255, 0.03));
+    display: flex;
+    align-items: center;
+    gap: 20px;
+  }
+
+  .now-playing .pulse {
+    width: 12px;
+    height: 12px;
+    background: var(--accent-2);
+    border-radius: 50%;
+    box-shadow: 0 0 12px var(--accent-2);
+    animation: pulse 2s ease-in-out infinite;
+    flex-shrink: 0;
+  }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 0.4; transform: scale(0.9); }
+    50%      { opacity: 1;   transform: scale(1.1); }
+  }
+
+  .now-playing .label {
+    font-family: var(--pixel);
+    font-size: 1.1rem;
+    color: var(--accent-2);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+
+  .now-playing .track {
+    color: var(--ink-dim);
+    font-style: italic;
+  }
+
+  .favorites {
+    margin-top: 20px;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    gap: 12px;
+  }
+
+  .favorites .fav {
+    padding: 12px 14px;
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    font-size: 0.95rem;
+    color: var(--ink-dim);
+  }
+
+  .favorites .fav strong {
+    color: var(--ink);
+    font-weight: 500;
+    display: block;
+  }
+
+  /* ---------- Blog ---------- */
+  .blog-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+
+  .blog-list li {
+    padding: 14px 0;
+    border-bottom: 1px dashed var(--border);
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 16px;
+    flex-wrap: wrap;
+  }
+
+  .blog-list li:last-child { border-bottom: none; }
+
+  .blog-list a {
+    color: var(--accent-2);
+    text-decoration: none;
+    font-size: 1.1rem;
+    transition: color 0.2s;
+  }
+
+  .blog-list a:hover {
+    color: var(--moon);
+    text-decoration: underline;
+    text-underline-offset: 4px;
+  }
+
+  .blog-list time {
+    color: var(--ink-faint);
+    font-family: var(--mono);
+    font-size: 0.85rem;
+  }
+
+  /* ---------- Sidebar ---------- */
+  aside {
+    border-left: 1px solid var(--border);
+    padding-left: 28px;
+    position: sticky;
+    top: 40px;
+    align-self: start;
+    font-size: 0.95rem;
+  }
+
+  aside h3 {
+    font-family: var(--serif);
+    font-style: italic;
+    font-weight: 500;
+    font-size: 1.2rem;
+    color: var(--moon);
+    margin: 0 0 12px;
+    letter-spacing: 0.05em;
+  }
+
+  aside h3:not(:first-child) { margin-top: 28px; }
+
+  aside ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+
+  aside ul li { margin-bottom: 6px; }
+
+  aside a {
+    color: var(--ink-dim);
+    text-decoration: none;
+    transition: all 0.2s;
+    display: inline-block;
+  }
+
+  aside a:hover {
+    color: var(--moon);
+    transform: translateX(3px);
+  }
+
+  aside a::before {
+    content: '✩ ';
+    color: var(--accent);
+    transition: color 0.2s;
+  }
+
+  aside a:hover::before { color: var(--moon); }
+
+  .status-box {
+    margin-top: 28px;
+    padding: 12px;
+    border: 1px solid var(--border-2);
+    border-radius: 4px;
+    font-family: var(--mono);
+    font-size: 0.8rem;
+    color: var(--ink-dim);
+  }
+
+  .status-box .ok { color: #7fffb8; }
+
+  /* ---------- Footer ---------- */
+  footer {
+    grid-column: 1 / -1;
+    text-align: center;
+    margin-top: 40px;
+    padding-top: 24px;
+    border-top: 1px dashed var(--border);
+    color: var(--ink-faint);
+    font-family: var(--mono);
+    font-size: 0.85rem;
+  }
+
+  footer .moon-divider {
+    font-size: 1.5rem;
+    color: var(--moon);
+    margin-bottom: 12px;
+    letter-spacing: 1em;
+  }
+
+  /* ---------- Responsive ---------- */
+  @media (max-width: 800px) {
+    .wrap {
+      grid-template-columns: 1fr;
+      padding: 32px 20px 60px;
+      gap: 32px;
     }
-    .card {
-      margin-top: 12vh;
-      background: #fff;
-      border-radius: 16px;
-      box-shadow: 0 4px 16px #0001;
-      padding: 2rem 2.5rem;
-      max-width: 360px;
+
+    aside {
+      border-left: none;
+      border-top: 1px dashed var(--border);
+      padding-left: 0;
+      padding-top: 24px;
+      position: static;
+    }
+
+    .welcome {
+      grid-template-columns: 1fr;
       text-align: center;
-      display: flex;
-      flex-direction: column;
-      gap: 1.2rem;
     }
-    .avatar {
-      width: 96px;
-      height: 96px;
-      border-radius: 50%;
-      object-fit: cover;
+
+    .welcome .portrait {
       margin: 0 auto;
-      border: 2px solid #ececec;
     }
-    .name { font-size: 2rem; font-weight: 700; }
-    .desc { font-size: 1.15rem; color: #444; }
-    .links {
-      display: flex; gap: 1.5rem; justify-content: center; margin-top: 1rem;
-    }
-    .links a {
-      color: #0074D9; text-decoration: none; font-weight: 500;
-      transition: color 0.2s;
-    }
-    .links a:hover { color: #005fa3; text-decoration: underline; }
-    @media (max-width: 480px) {
-      .card { padding: 1.3rem 0.9rem; }
-      .name { font-size: 1.45rem; }
-    }
-  </style>
+  }
+
+  /* selection */
+  ::selection {
+    background: var(--accent);
+    color: var(--bg-deep);
+  }
+</style>
 </head>
 <body>
-  <div class="card">
-    <img class="avatar" src="your-photo.jpg" alt="Your Name" />
-    <div class="name">Dragonhj</div>
-    <div class="desc">Hi! I'm a smalltime developer who's starting out. I love coding small projects.</div>
-    <div class="links">
-      <a href="https://x.com/dragnhj" target="_blank">Twitter</a>
-      <a href="mailto:oppergay@dndvaults.com">Email</a>
-      <a href="https://github.com/dragonhsj" target="_blank">GitHub</a>
+<div class="wrap">
+
+  <main>
+    <!-- HERO -->
+    <header class="hero">
+      <div class="moon">☾</div>
+      <h1>welcome, weary traveler</h1>
+      <p class="tagline">a quiet little corner of the web</p>
+      <div class="url">⟡ oppergay.nl ⟡</div>
+    </header>
+
+    <!-- WELCOME / BIO -->
+    <section id="about">
+      <div class="section-head">
+        <span class="sigil">✦</span>
+        <h2>about <em>me</em></h2>
+      </div>
+      <div class="welcome">
+        <div class="portrait">
+          <!-- replace src with your actual photo -->
+          <img src="your-photo.jpg" alt="Dragonhj" onerror="this.style.display='none'; this.parentElement.textContent='[ photo ]';">
+        </div>
+        <div>
+          <p>Hi! I'm <strong>Dragonhj</strong>, a smalltime developer who's starting out.</p>
+          <p>I love coding small projects.</p>
+          <p class="placeholder">[ more about me — fill in later ]</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- QUICK FACTS -->
+    <section id="facts">
+      <div class="section-head">
+        <span class="sigil">✦</span>
+        <h2>quick <em>facts</em></h2>
+      </div>
+      <ul class="facts">
+        <li class="placeholder">[ fact #1 — where you're from ]</li>
+        <li class="placeholder">[ fact #2 — main programming language ]</li>
+        <li class="placeholder">[ fact #3 — what you love ]</li>
+        <li class="placeholder">[ fact #4 — what you hate ]</li>
+        <li class="placeholder">[ fact #5 — current hobby ]</li>
+      </ul>
+    </section>
+
+    <!-- PROJECTS -->
+    <section id="projects">
+      <div class="section-head">
+        <span class="sigil">✦</span>
+        <h2>my <em>projects</em></h2>
+      </div>
+      <div class="projects">
+        <div class="project">
+          <h3>[ project name ]</h3>
+          <p class="placeholder">[ short description ]</p>
+        </div>
+        <div class="project">
+          <h3>[ project name ]</h3>
+          <p class="placeholder">[ short description ]</p>
+        </div>
+        <div class="project">
+          <h3>[ project name ]</h3>
+          <p class="placeholder">[ short description ]</p>
+        </div>
+        <div class="project">
+          <h3>[ project name ]</h3>
+          <p class="placeholder">[ short description ]</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- PHOTO WHEEL -->
+    <section id="gallery">
+      <div class="section-head">
+        <span class="sigil">✦</span>
+        <h2>photo <em>wheel</em></h2>
+      </div>
+      <div class="wheel-stage">
+        <div class="wheel">
+          <div class="slot">[ photo 1 ]</div>
+          <div class="slot">[ photo 2 ]</div>
+          <div class="slot">[ photo 3 ]</div>
+          <div class="slot">[ photo 4 ]</div>
+          <div class="slot">[ photo 5 ]</div>
+          <div class="slot">[ photo 6 ]</div>
+        </div>
+      </div>
+      <p class="wheel-hint">~ hover to pause ~</p>
+    </section>
+
+    <!-- NOW PLAYING / FAVORITES -->
+    <section id="now-playing">
+      <div class="section-head">
+        <span class="sigil">✦</span>
+        <h2>now <em>playing</em></h2>
+      </div>
+      <div class="now-playing">
+        <div class="pulse"></div>
+        <div>
+          <div class="label">last song</div>
+          <div class="track placeholder">[ nothing playing yet ]</div>
+        </div>
+      </div>
+
+      <h3 style="font-family: var(--serif); font-style: italic; font-weight: 500; color: var(--moon); margin: 32px 0 12px; font-size: 1.3rem;">favorites</h3>
+      <div class="favorites">
+        <div class="fav"><strong>[ album ]</strong><span class="placeholder">[ artist ]</span></div>
+        <div class="fav"><strong>[ album ]</strong><span class="placeholder">[ artist ]</span></div>
+        <div class="fav"><strong>[ album ]</strong><span class="placeholder">[ artist ]</span></div>
+        <div class="fav"><strong>[ album ]</strong><span class="placeholder">[ artist ]</span></div>
+      </div>
+    </section>
+
+    <!-- BLOG -->
+    <section id="blog">
+      <div class="section-head">
+        <span class="sigil">✦</span>
+        <h2>blog <em>posts</em></h2>
+      </div>
+      <ul class="blog-list">
+        <li>
+          <a href="#" class="placeholder">[ first post title ]</a>
+          <time>[ date ]</time>
+        </li>
+        <li>
+          <a href="#" class="placeholder">[ second post title ]</a>
+          <time>[ date ]</time>
+        </li>
+        <li>
+          <a href="#" class="placeholder">[ third post title ]</a>
+          <time>[ date ]</time>
+        </li>
+      </ul>
+    </section>
+  </main>
+
+  <!-- SIDEBAR -->
+  <aside>
+    <h3>~ stars ~</h3>
+    <ul>
+      <li><a href="#about">Home</a></li>
+      <li><a href="#about">About me</a></li>
+      <li><a href="#projects">Projects</a></li>
+      <li><a href="#gallery">Gallery</a></li>
+      <li><a href="#blog">Blog</a></li>
+    </ul>
+
+    <h3>~ links ~</h3>
+    <ul>
+      <li><a href="https://github.com/dragonhsj">GitHub</a></li>
+      <li><a href="https://x.com/dragnhj">Twitter</a></li>
+      <li><a href="mailto:oppergay@dndvaults.com">E-mail</a></li>
+    </ul>
+
+    <div class="status-box">
+      <div><span class="ok">[ OK ]</span> oppergay.nl</div>
+      <div><span class="ok">[ OK ]</span> github pages</div>
+      <div><span class="ok">[ OK ]</span> dns</div>
     </div>
-  </div>
+  </aside>
+
+  <!-- FOOTER -->
+  <footer>
+    <div class="moon-divider">☾ ✦ ☾</div>
+    <div>© 2025 dragonhj · made with care under the moon</div>
+  </footer>
+</div>
 </body>
 </html>
