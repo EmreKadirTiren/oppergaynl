@@ -1335,16 +1335,16 @@
         <h2>audio<em>_stream</em></h2>
         <span class="jp-tag">// 音楽</span>
       </div>
-      <div class="now-playing">
-        <div class="indicator">
+      <div class="now-playing" id="np-card">
+        <div class="indicator" id="np-indicator">
           <div class="bar"></div>
           <div class="bar"></div>
           <div class="bar"></div>
           <div class="bar"></div>
         </div>
-        <div>
-          <div class="label">NOW_PLAYING</div>
-          <div class="track placeholder">[ silent · no signal ]</div>
+        <div style="min-width: 0; flex: 1;">
+          <div class="label" id="np-label">NOW_PLAYING</div>
+          <div class="track placeholder" id="np-track">[ silent · no signal ]</div>
         </div>
       </div>
 
@@ -1726,6 +1726,46 @@ function bindSounds() {
 // activate sound on first user interaction (browser autoplay policy)
 window.addEventListener('pointerdown', () => ensureAudioCtx(), { once: true });
 bindSounds();
+
+/* ===== LAST.FM NOW PLAYING ===== */
+const LASTFM_USER = 'dragonhj';
+const LASTFM_KEY  = '4ac572d81e4c078e9b2e1c394496b414';
+
+const npLabel = document.getElementById('np-label');
+const npTrack = document.getElementById('np-track');
+const npIndicator = document.getElementById('np-indicator');
+
+async function fetchNowPlaying() {
+  try {
+    const url = `https://ws.audioscrobbler.com/2.0/?method=user.getrecenttracks&user=${LASTFM_USER}&api_key=${LASTFM_KEY}&format=json&limit=1`;
+    const res = await fetch(url);
+    if (!res.ok) throw new Error('lastfm api ' + res.status);
+    const data = await res.json();
+    const track = data?.recenttracks?.track?.[0];
+    if (!track) {
+      npLabel.textContent = 'NO_DATA';
+      npTrack.textContent = '[ silent · no signal ]';
+      npTrack.classList.add('placeholder');
+      npIndicator.style.opacity = '0.25';
+      return;
+    }
+    const nowPlaying = track['@attr']?.nowplaying === 'true';
+    const name = track.name || '?';
+    const artist = track.artist?.['#text'] || track.artist?.name || '?';
+    npLabel.textContent = nowPlaying ? 'NOW_PLAYING' : 'LAST_PLAYED';
+    npTrack.textContent = `${name} · ${artist}`;
+    npTrack.classList.remove('placeholder');
+    npIndicator.style.opacity = nowPlaying ? '1' : '0.35';
+  } catch (e) {
+    npLabel.textContent = 'OFFLINE';
+    npTrack.textContent = '[ no signal ]';
+    npTrack.classList.add('placeholder');
+    npIndicator.style.opacity = '0.25';
+  }
+}
+
+fetchNowPlaying();
+setInterval(fetchNowPlaying, 30_000);
 
 /* ===== HIT COUNTER (using counterapi.dev — free, no signup) ===== */
 const hitCountEl = document.getElementById('hit-count');
