@@ -296,10 +296,21 @@ function setCover(url) {
 
 function stripBio(html) {
   if (!html) return '';
-  let txt = html
-    .replace(/<a[^>]*last\.fm[^>]*>[^<]*<\/a>/gi, '')   // strip "Read more on Last.fm"
-    .replace(/<a [^>]*>([^<]*)<\/a>/gi, '$1')           // unwrap other links
-    .replace(/<[^>]+>/g, '')                            // strip remaining tags
+  const parser = new DOMParser();
+  const doc = parser.parseFromString(`<div>${html}</div>`, 'text/html');
+  const root = doc.body.firstElementChild || doc.body;
+
+  root.querySelectorAll('a').forEach((a) => {
+    const href = a.getAttribute('href') || '';
+    const text = a.textContent || '';
+    if (/last\.fm/i.test(href) || /last\.fm/i.test(text)) {
+      a.remove();
+      return;
+    }
+    a.replaceWith(doc.createTextNode(text));
+  });
+
+  let txt = (root.textContent || '')
     .replace(/User-contributed text is available under.*$/is, '')
     .replace(/\s+/g, ' ')
     .trim();
